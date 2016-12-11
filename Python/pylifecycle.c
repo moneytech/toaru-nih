@@ -328,11 +328,13 @@ _Py_InitializeEx_Private(int install_sigs, int install_importlib)
         Py_VerboseFlag = add_flag(Py_VerboseFlag, p);
     if ((p = Py_GETENV("PYTHONOPTIMIZE")) && *p != '\0')
         Py_OptimizeFlag = add_flag(Py_OptimizeFlag, p);
-#ifndef __toaru__
+#ifdef __toaru__
+    Py_DontWriteBytecodeFlag = add_flag(Py_DontWriteBytecodeFlag, "1");
+#else
     /* Always do this on ToaruOS, for now. */
     if ((p = Py_GETENV("PYTHONDONTWRITEBYTECODE")) && *p != '\0')
-#endif
         Py_DontWriteBytecodeFlag = add_flag(Py_DontWriteBytecodeFlag, p);
+#endif
     /* The variable is only tested for existence here; _PyRandom_Init will
        check its value further. */
     if ((p = Py_GETENV("PYTHONHASHSEED")) && *p != '\0')

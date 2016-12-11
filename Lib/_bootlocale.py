@@ -22,6 +22,7 @@ else:
     else:
         def getpreferredencoding(do_setlocale=True):
             assert not do_setlocale
+            return 'UTF-8'
             result = _locale.nl_langinfo(_locale.CODESET)
             if not result and sys.platform == 'darwin':
                 # nl_langinfo can return an empty string

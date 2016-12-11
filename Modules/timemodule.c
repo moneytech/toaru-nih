@@ -1161,8 +1161,10 @@ get_zone(char *zone, int n, struct tm *p)
 {
 #ifdef HAVE_STRUCT_TM_TM_ZONE
     strncpy(zone, p->tm_zone ? p->tm_zone : "   ", n);
-#else
+#elif HAVE_WORKING_TZSET
     tzset();
+    strftime(zone, n, "%Z", p);
+#else
     strftime(zone, n, "%Z", p);
 #endif
 }
@@ -1435,7 +1437,12 @@ pysleep(_PyTime_t secs)
             return -1;
 
         Py_BEGIN_ALLOW_THREADS
+#ifdef __toaru__
+        /* TODO sleep */
+        err = 1;
+#else
         err = select(0, (fd_set *)0, (fd_set *)0, (fd_set *)0, &timeout);
+#endif
         Py_END_ALLOW_THREADS
 
         if (err == 0)

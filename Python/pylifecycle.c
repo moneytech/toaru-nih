@@ -1001,6 +1001,10 @@ initfsencoding(PyInterpreterState *interp)
         Py_FileSystemDefaultEncodeErrors = "surrogatepass";
     }
 #else
+# ifdef __toaru__
+    Py_FileSystemDefaultEncoding = "utf-8";
+    Py_HasFileSystemDefaultEncoding = 1;
+# else
     if (Py_FileSystemDefaultEncoding == NULL)
     {
         Py_FileSystemDefaultEncoding = get_locale_encoding();
@@ -1011,6 +1015,7 @@ initfsencoding(PyInterpreterState *interp)
         interp->fscodec_initialized = 1;
         return 0;
     }
+# endif
 #endif
 
     /* the encoding is mbcs, utf-8 or ascii */
@@ -1227,6 +1232,11 @@ initstdio(void)
     errors = _Py_StandardStreamErrors;
     if (!encoding || !errors) {
         pythonioencoding = Py_GETENV("PYTHONIOENCODING");
+#ifdef __toaru__
+        if (!pythonioencoding) {
+            pythonioencoding = "UTF-8";
+        }
+#endif
         if (pythonioencoding) {
             char *err;
             pythonioencoding = _PyMem_Strdup(pythonioencoding);

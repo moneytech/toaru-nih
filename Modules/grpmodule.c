@@ -96,10 +96,7 @@ static PyObject *
 grp_getgrgid_impl(PyObject *module, PyObject *id)
 /*[clinic end generated code: output=30797c289504a1ba input=15fa0e2ccf5cda25]*/
 {
-    PyObject *gid_obj = _PyLong_FromGid(gid);
-    if (gid_obj == NULL)
-        return NULL;
-    PyErr_Format(PyExc_KeyError, "getgrgid(): gid not found: %S", gid_obj);
+    PyErr_Format(PyExc_KeyError, "getgrgid(): (unspported)");
     return NULL;
 #if 0
     PyObject *py_int_id;

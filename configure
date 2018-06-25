@@ -9407,7 +9407,7 @@ $as_echo "$CFLAGSFORSHARED" >&6; }
 $as_echo_n "checking SHLIBS... " >&6; }
 case "$ac_sys_system" in
 	*Toaru)
-		SHLIBS='-ltoaru-dlfcn $(LIBS)';;
+		SHLIBS='-ltoaru_dlfcn $(LIBS)';;
 	*)
 		SHLIBS='$(LIBS)';;
 esac
@@ -13760,6 +13760,7 @@ fi
 
 case $ac_sys_system in
 Darwin) ;;
+Toaru) ;;
 *) LIBM=-lm
 esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for --with-libm=STRING" >&5

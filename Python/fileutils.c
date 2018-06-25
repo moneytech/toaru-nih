@@ -424,7 +424,7 @@ oom:
 char*
 Py_EncodeLocale(const wchar_t *text, size_t *error_pos)
 {
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__toaru__)
     Py_ssize_t len;
     PyObject *unicode, *bytes = NULL;
     char *cpath;

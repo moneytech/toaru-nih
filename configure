@@ -9406,8 +9406,6 @@ $as_echo "$CFLAGSFORSHARED" >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking SHLIBS" >&5
 $as_echo_n "checking SHLIBS... " >&6; }
 case "$ac_sys_system" in
-	*Toaru)
-		SHLIBS='-ltoaru_dlfcn $(LIBS)';;
 	*)
 		SHLIBS='$(LIBS)';;
 esac

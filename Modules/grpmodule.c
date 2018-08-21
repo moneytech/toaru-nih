@@ -96,6 +96,9 @@ static PyObject *
 grp_getgrgid_impl(PyObject *module, PyObject *id)
 /*[clinic end generated code: output=30797c289504a1ba input=15fa0e2ccf5cda25]*/
 {
+    PyErr_Format(PyExc_KeyError, "getgrgid(): (unspported)");
+    return NULL;
+#if 0
     PyObject *py_int_id;
     gid_t gid;
     struct group *p;
@@ -129,6 +132,7 @@ grp_getgrgid_impl(PyObject *module, PyObject *id)
         return NULL;
     }
     return mkgrent(p);
+#endif
 }
 
 /*[clinic input]
@@ -154,7 +158,7 @@ grp_getgrnam_impl(PyObject *module, PyObject *name)
     if (PyBytes_AsStringAndSize(bytes, &name_chars, NULL) == -1)
         goto out;
 
-    if ((p = getgrnam(name_chars)) == NULL) {
+    if (1 || (p = getgrnam(name_chars)) == NULL) {
         PyErr_Format(PyExc_KeyError, "getgrnam(): name not found: %s", name_chars);
         goto out;
     }
@@ -182,6 +186,8 @@ grp_getgrall_impl(PyObject *module)
 
     if ((d = PyList_New(0)) == NULL)
         return NULL;
+    return 0;
+#if 0
     setgrent();
     while ((p = getgrent()) != NULL) {
         PyObject *v = mkgrent(p);
@@ -194,6 +200,7 @@ grp_getgrall_impl(PyObject *module)
         Py_DECREF(v);
     }
     endgrent();
+#endif
     return d;
 }
 

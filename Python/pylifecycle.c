@@ -328,8 +328,13 @@ _Py_InitializeEx_Private(int install_sigs, int install_importlib)
         Py_VerboseFlag = add_flag(Py_VerboseFlag, p);
     if ((p = Py_GETENV("PYTHONOPTIMIZE")) && *p != '\0')
         Py_OptimizeFlag = add_flag(Py_OptimizeFlag, p);
+#ifdef __toaru__
+    Py_DontWriteBytecodeFlag = add_flag(Py_DontWriteBytecodeFlag, "1");
+#else
+    /* Always do this on ToaruOS, for now. */
     if ((p = Py_GETENV("PYTHONDONTWRITEBYTECODE")) && *p != '\0')
         Py_DontWriteBytecodeFlag = add_flag(Py_DontWriteBytecodeFlag, p);
+#endif
     /* The variable is only tested for existence here; _PyRandom_Init will
        check its value further. */
     if ((p = Py_GETENV("PYTHONHASHSEED")) && *p != '\0')
@@ -996,6 +1001,10 @@ initfsencoding(PyInterpreterState *interp)
         Py_FileSystemDefaultEncodeErrors = "surrogatepass";
     }
 #else
+# ifdef __toaru__
+    Py_FileSystemDefaultEncoding = "utf-8";
+    Py_HasFileSystemDefaultEncoding = 1;
+# else
     if (Py_FileSystemDefaultEncoding == NULL)
     {
         Py_FileSystemDefaultEncoding = get_locale_encoding();
@@ -1006,6 +1015,7 @@ initfsencoding(PyInterpreterState *interp)
         interp->fscodec_initialized = 1;
         return 0;
     }
+# endif
 #endif
 
     /* the encoding is mbcs, utf-8 or ascii */
@@ -1222,6 +1232,11 @@ initstdio(void)
     errors = _Py_StandardStreamErrors;
     if (!encoding || !errors) {
         pythonioencoding = Py_GETENV("PYTHONIOENCODING");
+#ifdef __toaru__
+        if (!pythonioencoding) {
+            pythonioencoding = "UTF-8";
+        }
+#endif
         if (pythonioencoding) {
             char *err;
             pythonioencoding = _PyMem_Strdup(pythonioencoding);

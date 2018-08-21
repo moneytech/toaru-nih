@@ -3253,6 +3253,9 @@ then
 	*-*-cygwin*)
 		ac_sys_system=Cygwin
 		;;
+	*-*-toaru*)
+		ac_sys_system=Toaru
+		;;
 	*)
 		# for now, limit cross builds to known configurations
 		MACHDEP="unknown"
@@ -3294,6 +3297,9 @@ if test "$cross_compiling" = yes; then
 		*)
 			_host_cpu=$host_cpu
 		esac
+		;;
+	*-*-toaru*)
+		_host_cpu=
 		;;
 	*-*-cygwin*)
 		_host_cpu=
@@ -5964,6 +5970,11 @@ $as_echo "#define Py_ENABLE_SHARED 1" >>confdefs.h
           then
 	      PY3LIBRARY=libpython3.so
 	  fi
+	  ;;
+    Toaru*)
+	  LDLIBRARY='libpython$(LDVERSION).so'
+	  BLDLIBRARY='-L. -lpython$(LDVERSION)'
+	  INSTSONAME="$LDLIBRARY"
 	  ;;
     hp*|HP*)
 	  case `uname -m` in
@@ -9213,6 +9224,10 @@ then
 	Linux*|GNU*|QNX*)
 		LDSHARED='$(CC) -shared'
 		LDCXXSHARED='$(CXX) -shared';;
+	Toaru*)
+		LDSHARED='$(CC) -shared'
+		LDCXXSHARED='$(CXX) -shared'
+		;;
 	BSD/OS*/4*)
 		LDSHARED="gcc -shared"
 		LDCXXSHARED="g++ -shared";;
@@ -11153,6 +11168,7 @@ then
 	hp*|HP*) DYNLOADFILE="dynload_hpux.o";;
 	# Use dynload_next.c only on 10.2 and below, which don't have native dlopen()
 	Darwin/[0156]\..*) DYNLOADFILE="dynload_next.o";;
+	Toaru*) DYNLOADFILE="dynload_shlib.o";;
 	*)
 	# use dynload_shlib.c and dlopen() if we have it; otherwise stub
 	# out any dynamic loading
@@ -11353,7 +11369,8 @@ void *x=fsync
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
 
-$as_echo "#define HAVE_FSYNC 1" >>confdefs.h
+# XXX no FSYNC
+#$as_echo "#define HAVE_FSYNC 1" >>confdefs.h
 
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
@@ -11378,7 +11395,8 @@ void *x=fdatasync
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
 
-$as_echo "#define HAVE_FDATASYNC 1" >>confdefs.h
+# XXX no FDATASYNC
+#$as_echo "#define HAVE_FDATASYNC 1" >>confdefs.h
 
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
@@ -13740,6 +13758,7 @@ fi
 
 case $ac_sys_system in
 Darwin) ;;
+Toaru) ;;
 *) LIBM=-lm
 esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for --with-libm=STRING" >&5

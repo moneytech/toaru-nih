@@ -633,7 +633,10 @@ _PyTime_GetSystemClockWithInfo(_PyTime_t *t, _Py_clock_info_t *info)
 static int
 pymonotonic(_PyTime_t *tp, _Py_clock_info_t *info, int raise)
 {
-#if defined(MS_WINDOWS)
+#ifdef __toaru__
+    /* TODO Unsupported */
+    return 0;
+#elif defined(MS_WINDOWS)
     ULONGLONG ticks;
     _PyTime_t t;
 

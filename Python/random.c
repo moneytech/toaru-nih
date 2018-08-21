@@ -452,7 +452,7 @@ _PyRandom_Init(void)
     if (env && *env != '\0' && strcmp(env, "random") != 0) {
         char *endptr = env;
         unsigned long seed;
-        seed = strtoul(env, &endptr, 10);
+        seed = PyOS_strtoul(env, &endptr, 10);
         if (*endptr != '\0'
             || seed > 4294967295UL
             || (errno == ERANGE && seed == ULONG_MAX))

@@ -20,7 +20,7 @@ extern int winerror_to_errno(int);
 #include <fcntl.h>
 #endif /* HAVE_FCNTL_H */
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__toaru__)
 extern wchar_t* _Py_DecodeUTF8_surrogateescape(const char *s, Py_ssize_t size);
 #endif
 
@@ -273,7 +273,7 @@ decode_ascii_surrogateescape(const char *arg, size_t *size)
 wchar_t*
 Py_DecodeLocale(const char* arg, size_t *size)
 {
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__toaru__)
     wchar_t *wstr;
     wstr = _Py_DecodeUTF8_surrogateescape(arg, strlen(arg));
     if (size != NULL) {
@@ -424,7 +424,7 @@ oom:
 char*
 Py_EncodeLocale(const wchar_t *text, size_t *error_pos)
 {
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__toaru__)
     Py_ssize_t len;
     PyObject *unicode, *bytes = NULL;
     char *cpath;

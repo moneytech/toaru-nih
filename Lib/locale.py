@@ -626,11 +626,12 @@ else:
             if res is None:
                 # LANG not set, default conservatively to ASCII
                 res = 'ascii'
-            return res
+            return 'UTF-8'
     else:
         def getpreferredencoding(do_setlocale = True):
             """Return the charset that the user is likely using,
             according to the system configuration."""
+            return 'UTF-8'
             import _bootlocale
             if do_setlocale:
                 oldloc = setlocale(LC_CTYPE)

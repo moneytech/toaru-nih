@@ -1423,6 +1423,10 @@ def pager(text):
 
 def getpager():
     """Decide what method to use for paging through text."""
+    # XXX The attempts to use less don't work on ToaruOS, so just use the plainpager
+    #     eventually, the shell support should be sufficient to get rid of this hack,
+    #     and less itself can be ported pretty easily (works just fine).
+    return plainpager
     if not hasattr(sys.stdin, "isatty"):
         return plainpager
     if not hasattr(sys.stdout, "isatty"):

@@ -5083,7 +5083,7 @@ onError:
     return NULL;
 }
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__toaru__)
 
 /* Simplified UTF-8 decoder using surrogateescape error handler,
    used to decode the command line arguments on Mac OS X.

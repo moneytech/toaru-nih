@@ -468,6 +468,12 @@ class DictTest(unittest.TestCase):
         d = {1: BadRepr()}
         self.assertRaises(Exc, repr, d)
 
+    def test_repr_deep(self):
+        d = {}
+        for i in range(sys.getrecursionlimit() + 100):
+            d = {1: d}
+        self.assertRaises(RecursionError, repr, d)
+
     def test_eq(self):
         self.assertEqual({}, {})
         self.assertEqual({1: 2}, {1: 2})
@@ -933,6 +939,36 @@ class DictTest(unittest.TestCase):
         self.assertEqual(list(a), ['x', 'y'])
         self.assertEqual(list(b), ['x', 'y', 'z'])
 
+    @support.cpython_only
+    def test_splittable_setattr_after_pop(self):
+        """setattr() must not convert combined table into split table."""
+        # Issue 28147
+        import _testcapi
+
+        class C:
+            pass
+        a = C()
+
+        a.a = 1
+        self.assertTrue(_testcapi.dict_hassplittable(a.__dict__))
+
+        # dict.pop() convert it to combined table
+        a.__dict__.pop('a')
+        self.assertFalse(_testcapi.dict_hassplittable(a.__dict__))
+
+        # But C should not convert a.__dict__ to split table again.
+        a.a = 1
+        self.assertFalse(_testcapi.dict_hassplittable(a.__dict__))
+
+        # Same for popitem()
+        a = C()
+        a.a = 2
+        self.assertTrue(_testcapi.dict_hassplittable(a.__dict__))
+        a.__dict__.popitem()
+        self.assertFalse(_testcapi.dict_hassplittable(a.__dict__))
+        a.a = 3
+        self.assertFalse(_testcapi.dict_hassplittable(a.__dict__))
+
     def test_iterator_pickling(self):
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             data = {1:"a", 2:"b", 3:"c"}
@@ -1054,6 +1090,91 @@ class DictTest(unittest.TestCase):
         support.check_free_after_iterating(self, lambda d: iter(d.keys()), dict)
         support.check_free_after_iterating(self, lambda d: iter(d.values()), dict)
         support.check_free_after_iterating(self, lambda d: iter(d.items()), dict)
+
+    def test_equal_operator_modifying_operand(self):
+        # test fix for seg fault reported in issue 27945 part 3.
+        class X():
+            def __del__(self):
+                dict_b.clear()
+
+            def __eq__(self, other):
+                dict_a.clear()
+                return True
+
+            def __hash__(self):
+                return 13
+
+        dict_a = {X(): 0}
+        dict_b = {X(): X()}
+        self.assertTrue(dict_a == dict_b)
+
+    def test_fromkeys_operator_modifying_dict_operand(self):
+        # test fix for seg fault reported in issue 27945 part 4a.
+        class X(int):
+            def __hash__(self):
+                return 13
+
+            def __eq__(self, other):
+                if len(d) > 1:
+                    d.clear()
+                return False
+
+        d = {}  # this is required to exist so that d can be constructed!
+        d = {X(1): 1, X(2): 2}
+        try:
+            dict.fromkeys(d)  # shouldn't crash
+        except RuntimeError:  # implementation defined
+            pass
+
+    def test_fromkeys_operator_modifying_set_operand(self):
+        # test fix for seg fault reported in issue 27945 part 4b.
+        class X(int):
+            def __hash__(self):
+                return 13
+
+            def __eq__(self, other):
+                if len(d) > 1:
+                    d.clear()
+                return False
+
+        d = {}  # this is required to exist so that d can be constructed!
+        d = {X(1), X(2)}
+        try:
+            dict.fromkeys(d)  # shouldn't crash
+        except RuntimeError:  # implementation defined
+            pass
+
+    def test_dictitems_contains_use_after_free(self):
+        class X:
+            def __eq__(self, other):
+                d.clear()
+                return NotImplemented
+
+        d = {0: set()}
+        (0, X()) in d.items()
+
+    def test_init_use_after_free(self):
+        class X:
+            def __hash__(self):
+                pair[:] = []
+                return 13
+
+        pair = [X(), 123]
+        dict([pair])
+
+    def test_oob_indexing_dictiter_iternextitem(self):
+        class X(int):
+            def __del__(self):
+                d.clear()
+
+        d = {i: X(i) for i in range(8)}
+
+        def iter_and_mutate():
+            for result in d.items():
+                if result[0] == 2:
+                    d[2] = None # free d[2] --> X(2).__del__ was called
+
+        self.assertRaises(RuntimeError, iter_and_mutate)
 
 
 class CAPITest(unittest.TestCase):

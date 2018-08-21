@@ -8,6 +8,8 @@ import sys
 import unittest
 import warnings
 from test import support
+from test.support.script_helper import assert_python_ok
+from test.support import FakePath
 
 
 def create_file(filename, data=b'foo'):
@@ -213,7 +215,10 @@ class GenericTest:
         self._test_samefile_on_link_func(os.symlink)
 
     def test_samefile_on_link(self):
-        self._test_samefile_on_link_func(os.link)
+        try:
+            self._test_samefile_on_link_func(os.link)
+        except PermissionError as e:
+            self.skipTest('os.link(): %s' % e)
 
     def test_samestat(self):
         test_fn1 = support.TESTFN
@@ -252,7 +257,10 @@ class GenericTest:
         self._test_samestat_on_link_func(os.symlink)
 
     def test_samestat_on_link(self):
-        self._test_samestat_on_link_func(os.link)
+        try:
+            self._test_samestat_on_link_func(os.link)
+        except PermissionError as e:
+            self.skipTest('os.link(): %s' % e)
 
     def test_sameopenfile(self):
         filename = support.TESTFN
@@ -480,21 +488,15 @@ class CommonTest(GenericTest):
             with self.assertRaisesRegex(TypeError, 'bytearray'):
                 self.pathmodule.relpath(bytearray(b'foo'), bytearray(b'bar'))
 
+    def test_import(self):
+        assert_python_ok('-S', '-c', 'import ' + self.pathmodule.__name__)
+
 
 class PathLikeTests(unittest.TestCase):
 
-    class PathLike:
-        def __init__(self, path=''):
-            self.path = path
-        def __fspath__(self):
-            if isinstance(self.path, BaseException):
-                raise self.path
-            else:
-                return self.path
-
     def setUp(self):
         self.file_name = support.TESTFN.lower()
-        self.file_path = self.PathLike(support.TESTFN)
+        self.file_path = FakePath(support.TESTFN)
         self.addCleanup(support.unlink, self.file_name)
         create_file(self.file_name, b"test_genericpath.PathLikeTests")
 

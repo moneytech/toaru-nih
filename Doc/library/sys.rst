@@ -594,6 +594,24 @@ always available.
    .. versionchanged:: 3.6
       Added *platform_version*
 
+
+.. function:: get_asyncgen_hooks()
+
+   Returns an *asyncgen_hooks* object, which is similar to a
+   :class:`~collections.namedtuple` of the form `(firstiter, finalizer)`,
+   where *firstiter* and *finalizer* are expected to be either ``None`` or
+   functions which take an :term:`asynchronous generator iterator` as an
+   argument, and are used to schedule finalization of an asychronous
+   generator by an event loop.
+
+   .. versionadded:: 3.6
+      See :pep:`525` for more details.
+
+   .. note::
+      This function has been added on a provisional basis (see :pep:`411`
+      for details.)
+
+
 .. function:: get_coroutine_wrapper()
 
    Returns ``None``, or a wrapper set by :func:`set_coroutine_wrapper`.
@@ -987,13 +1005,38 @@ always available.
    Set the system's profile function, which allows you to implement a Python source
    code profiler in Python.  See chapter :ref:`profile` for more information on the
    Python profiler.  The system's profile function is called similarly to the
-   system's trace function (see :func:`settrace`), but it isn't called for each
-   executed line of code (only on call and return, but the return event is reported
-   even when an exception has been set).  The function is thread-specific, but
-   there is no way for the profiler to know about context switches between threads,
-   so it does not make sense to use this in the presence of multiple threads. Also,
+   system's trace function (see :func:`settrace`), but it is called with different events,
+   for example it isn't called for each executed line of code (only on call and return,
+   but the return event is reported even when an exception has been set). The function is
+   thread-specific, but there is no way for the profiler to know about context switches between
+   threads, so it does not make sense to use this in the presence of multiple threads. Also,
    its return value is not used, so it can simply return ``None``.
 
+   Profile functions should have three arguments: *frame*, *event*, and
+   *arg*. *frame* is the current stack frame.  *event* is a string: ``'call'``,
+   ``'return'``, ``'c_call'``, ``'c_return'``, or ``'c_exception'``. *arg* depends
+   on the event type.
+
+   The events have the following meaning:
+
+   ``'call'``
+      A function is called (or some other code block entered).  The
+      profile function is called; *arg* is ``None``.
+
+   ``'return'``
+      A function (or other code block) is about to return.  The profile
+      function is called; *arg* is the value that will be returned, or ``None``
+      if the event is caused by an exception being raised.
+
+   ``'c_call'``
+      A C function is about to be called.  This may be an extension function or
+      a built-in.  *arg* is the C function object.
+
+   ``'c_return'``
+      A C function has returned. *arg* is the C function object.
+
+   ``'c_exception'``
+      A C function has raised an exception.  *arg* is the C function object.
 
 .. function:: setrecursionlimit(limit)
 
@@ -1040,8 +1083,8 @@ always available.
 
    Trace functions should have three arguments: *frame*, *event*, and
    *arg*. *frame* is the current stack frame.  *event* is a string: ``'call'``,
-   ``'line'``, ``'return'``, ``'exception'``, ``'c_call'``, ``'c_return'``, or
-   ``'c_exception'``. *arg* depends on the event type.
+   ``'line'``, ``'return'`` or ``'exception'``.  *arg* depends on
+   the event type.
 
    The trace function is invoked (with *event* set to ``'call'``) whenever a new
    local scope is entered; it should return a reference to a local trace
@@ -1076,16 +1119,6 @@ always available.
       tuple ``(exception, value, traceback)``; the return value specifies the
       new local trace function.
 
-   ``'c_call'``
-      A C function is about to be called.  This may be an extension function or
-      a built-in.  *arg* is the C function object.
-
-   ``'c_return'``
-      A C function has returned. *arg* is the C function object.
-
-   ``'c_exception'``
-      A C function has raised an exception.  *arg* is the C function object.
-
    Note that as an exception is propagated down the chain of callers, an
    ``'exception'`` event is generated at each level.
 
@@ -1097,6 +1130,24 @@ always available.
       profilers, coverage tools and the like.  Its behavior is part of the
       implementation platform, rather than part of the language definition, and
       thus may not be available in all Python implementations.
+
+.. function:: set_asyncgen_hooks(firstiter, finalizer)
+
+   Accepts two optional keyword arguments which are callables that accept an
+   :term:`asynchronous generator iterator` as an argument. The *firstiter*
+   callable will be called when an asynchronous generator is iterated for the
+   first time. The *finalizer* will be called when an asynchronous generator
+   is about to be garbage collected.
+
+   .. versionadded:: 3.6
+      See :pep:`525` for more details, and for a reference example of a
+      *finalizer* method see the implementation of
+      ``asyncio.Loop.shutdown_asyncgens`` in
+      :source:`Lib/asyncio/base_events.py`
+
+   .. note::
+      This function has been added on a provisional basis (see :pep:`411`
+      for details.)
 
 
 .. function:: set_coroutine_wrapper(wrapper)

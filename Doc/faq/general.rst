@@ -117,7 +117,7 @@ programming), software engineering (unit testing, logging, profiling, parsing
 Python code), and operating system interfaces (system calls, filesystems, TCP/IP
 sockets).  Look at the table of contents for :ref:`library-index` to get an idea
 of what's available.  A wide variety of third-party extensions are also
-available.  Consult `the Python Package Index <https://pypi.python.org/pypi>`_ to
+available.  Consult `the Python Package Index <https://pypi.org>`_ to
 find packages of interest to you.
 
 
@@ -159,7 +159,7 @@ How do I obtain a copy of the Python source?
 
 The latest Python source distribution is always available from python.org, at
 https://www.python.org/downloads/.  The latest development sources can be obtained
-via anonymous Mercurial access at https://hg.python.org/cpython.
+at https://github.com/python/cpython/.
 
 The source distribution is a gzipped tar file containing the complete C source,
 Sphinx-formatted documentation, Python library modules, example programs, and
@@ -167,7 +167,7 @@ several useful pieces of freely distributable software.  The source will compile
 and run out of the box on most UNIX platforms.
 
 Consult the `Getting Started section of the Python Developer's Guide
-<https://docs.python.org/devguide/setup.html>`__ for more
+<https://devguide.python.org/setup/>`__ for more
 information on getting the source code and compiling it.
 
 
@@ -222,8 +222,8 @@ releases are announced on the comp.lang.python and comp.lang.python.announce
 newsgroups and on the Python home page at https://www.python.org/; an RSS feed of
 news is available.
 
-You can also access the development version of Python through Mercurial.  See
-https://docs.python.org/devguide/faq.html for details.
+You can also access the development version of Python through Git.  See
+`The Python Developer's Guide <https://devguide.python.org/>`_ for details.
 
 
 How do I submit bug reports and patches for Python?
@@ -239,7 +239,7 @@ report bugs to Python, you can obtain your Roundup password through Roundup's
 `password reset procedure <https://bugs.python.org/user?@template=forgotten>`_.
 
 For more information on how Python is developed, consult `the Python Developer's
-Guide <https://docs.python.org/devguide/>`_.
+Guide <https://devguide.python.org/>`_.
 
 
 Are there any published articles about Python that I can reference?

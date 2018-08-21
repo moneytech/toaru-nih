@@ -300,8 +300,12 @@ Constants
    provided.
 
    .. versionchanged:: 3.6
-      ``SO_DOMAIN``, ``SO_PROTOCOL``, ``SO_PEERSEC``, ``SO_PASSSEC``
-      were added.
+      ``SO_DOMAIN``, ``SO_PROTOCOL``, ``SO_PEERSEC``, ``SO_PASSSEC``,
+      ``TCP_USER_TIMEOUT``, ``TCP_CONGESTION`` were added.
+
+   .. versionchanged:: 3.6.5
+      On Windows, ``TCP_FASTOPEN``, ``TCP_KEEPCNT`` appear if run-time Windows
+      supports.
 
 .. data:: AF_CAN
           PF_CAN
@@ -1342,8 +1346,8 @@ to sockets.
    to transmit as opposed to sending the file until EOF is reached. File
    position is updated on return or also in case of error in which case
    :meth:`file.tell() <io.IOBase.tell>` can be used to figure out the number of
-   bytes which were sent. The socket must be of :const:`SOCK_STREAM` type. Non-
-   blocking sockets are not supported.
+   bytes which were sent. The socket must be of :const:`SOCK_STREAM` type.
+   Non-blocking sockets are not supported.
 
    .. versionadded:: 3.5
 
